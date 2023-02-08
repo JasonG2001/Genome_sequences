@@ -124,6 +124,26 @@ def get_wanted_sequence(sequence_name: str, sequences: Dict[str,str], total_sequ
 
 
 def get_2000(sequence: str, total_sequence: str, before: bool) -> str:
+
+    """Obtains the 2000 base sequence wanted for each gene name
+
+    Parameters
+    ----------
+    sequence: str
+        the sequence being located somewhere in the genome, obtained from the overall dataset of names to 
+        sequence
+    total_sequence: str
+        the total sequence of the genome
+    before: bool
+        True or False values will determine if the 2000 base sequence is taken before or after the match
+
+    Returns
+    -------
+    str
+        returns the 2000 base sequence before or after. Except block catches instance if there are no 2000
+        base sequence before of after. This case returns "out_of_genome"
+    """
+
     try:
         start_index: int = total_sequence.find(sequence)
         if before:
@@ -136,7 +156,21 @@ def get_2000(sequence: str, total_sequence: str, before: bool) -> str:
 
 def reverse_sequence(sequence: str) -> str:
     
-    new_base: str = ""
+    """Function 'reverses' the sequence through changing the bases to their corresponding base and
+    reversing the entire order
+
+    Parameters
+    ----------
+    sequence: str
+        gene sequence that we wish to obtain the corresponding sequence for
+
+    Returns
+    -------
+    str
+        the corresponding sequence
+    """
+
+    corresponding_sequence: str = ""
     
     base_pairs: Dict[str,str] = {
         "A": "T",
@@ -148,15 +182,30 @@ def reverse_sequence(sequence: str) -> str:
     
     base: str
     for base in sequence:
-        new_base += base_pairs[base]
+        corresponding_sequence += base_pairs[base]
         
-    new_base: str = new_base[::-1]
+    corresponding_sequence: str = corresponding_sequence[::-1]
     
-    return new_base
+    return corresponding_sequence
                     
             
 def convert_to_one_sequence(check_sequences: Dict[str,str]) -> str:
     
+    """The entire genome fasta file contains names which break up each section of the genome. To simplfy
+    the process of finding a specific gene inside the genome, the segmented sections of the genome are 
+    combined together to give a long sequence
+
+    Parameters
+    ---------
+    check_sequences: Dict[str,str]
+        the whole genome fasta file converted to the form of a dictionary
+
+    Returns
+    -------
+    str
+        the whole sequence chain for the genome
+    """
+
     total_sequence: str = ""
     
     sequence: str
@@ -168,6 +217,21 @@ def convert_to_one_sequence(check_sequences: Dict[str,str]) -> str:
             
 def check_presence(sequences_to_check: str, total_sequence: str) -> bool:
     
+    """Quick check to determine if the sequence is within the genome
+
+    Parameters
+    ----------
+    sequence_to_check: str
+        the gene sequence to look for
+    total_sequence: str
+        the entire genome sequence
+
+    Returns
+    -------
+    bool
+        True is gene is found, else false if gene is not found in the genome
+    """
+
     if sequences_to_check in total_sequence:
         return True
     else:
@@ -176,6 +240,20 @@ def check_presence(sequences_to_check: str, total_sequence: str) -> bool:
     
 def convert_to_fasta(df: pd.DataFrame, sequences: Dict[str,str], total_sequence: str, name: str) -> None:
     
+    """Converts the final dictionary being processed into a .txt file in the format of a fasta file
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+        dataframe of just the wanted gene names
+    sequences: Dict[str,str]
+        sequence of the names of all genes and their models to their gene sequence
+    total_sequence: str
+        total genome sequence
+    name: str
+        name of the that's wanted to be generated
+    """
+
     final_dictionary: Dict[str,str] = get_result(df, sequences, total_sequence)
     
     text_file = open(name, "w")
